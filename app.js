@@ -1,20 +1,14 @@
-const express = require('express');
-const bodyParse = require('body-parser');
-const admin = require('./routes/admin');
-const shop = require('./routes/shop');
-const bodyParser = require('body-parser');
+const express = require('express'),
+      bodyParser = require('body-parser'),
+      path = require('path'),
+      app = express();
 
-const app = express();
-app.set('view engine', 'pug');
-app.use(bodyParse.urlencoded( {extended: false} ));
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', admin.router);
-app.use(shop);
+app.use('/admin', require('./routes/admin'));
+app.use(require('./routes/shop'));
+app.use(require('./controllers/error').get404);
 
-app.use((req, res, next) => {
-  res.status(404).render('404', {pageTitle: 'Page Not Found'});
-    
-});
-
-app.listen(5000);
-
+app.listen(5000, () => console.log('Listening on port 5000'));
